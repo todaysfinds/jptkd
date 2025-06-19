@@ -605,9 +605,9 @@ def remove_student_from_schedule():
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)})
 
-if __name__ == '__main__':
+# 앱 초기화 함수
+def init_db():
     import os
-    
     with app.app_context():
         # 배포환경에서는 데이터 보존, 개발환경에서만 재생성
         if os.environ.get('FLASK_ENV') == 'production':
@@ -617,72 +617,80 @@ if __name__ == '__main__':
             db.create_all()
         
         # 샘플 데이터 추가 (처음 실행시에만)
-        if Student.query.count() == 0:
-            # 실제 시간표 기반 샘플 학생 데이터
-            students_data = [
-                # 1부 (2:00~2:50)
-                {'name': '홍길동', 'grade': '초등 3학년', 'phone': '010-1234-5678', 'pickup_location': '동부시스템', 'estimated_pickup_time': '2:40', 'session_part': 1, 'memo': ''},
-                {'name': '김철수', 'grade': '초등 4학년', 'phone': '010-2345-6789', 'pickup_location': '승차', 'estimated_pickup_time': '2:30', 'session_part': 1, 'memo': ''},
-                
-                # 2부 (3:00~3:50)  
-                {'name': '이영희', 'grade': '초등 2학년', 'phone': '010-1111-2222', 'pickup_location': '현대홈타운', 'estimated_pickup_time': '3:30', 'session_part': 2, 'memo': ''},
-                {'name': '박민수', 'grade': '초등 5학년', 'phone': '010-3333-4444', 'pickup_location': '삼성래미안', 'estimated_pickup_time': '3:40', 'session_part': 2, 'memo': ''},
-                {'name': '최수진', 'grade': '초등 3학년', 'phone': '010-4444-5555', 'pickup_location': '삼성래미안', 'estimated_pickup_time': '3:42', 'session_part': 2, 'memo': ''},
-                
-                # 3부 (4:30~5:20)
-                {'name': '정우성', 'grade': '초등 1학년', 'phone': '010-5555-6666', 'pickup_location': '현대홈타운', 'estimated_pickup_time': '4:15', 'session_part': 3, 'memo': ''},
-                {'name': '강호동', 'grade': '초등 4학년', 'phone': '010-6666-7777', 'pickup_location': '이화빌라', 'estimated_pickup_time': '4:10', 'session_part': 3, 'memo': ''},
-                {'name': '유재석', 'grade': '초등 6학년', 'phone': '010-7777-8888', 'pickup_location': '영은유치원', 'estimated_pickup_time': '4:14', 'session_part': 3, 'memo': ''},
-                
-                # 4부 (5:30~6:20)
-                {'name': '송중기', 'grade': '초등 2학년', 'phone': '010-8888-9999', 'pickup_location': '현대홈타운', 'estimated_pickup_time': '6:30', 'session_part': 4, 'memo': ''},
-                {'name': '전지현', 'grade': '초등 5학년', 'phone': '010-9999-0000', 'pickup_location': '이디야', 'estimated_pickup_time': '6:35', 'session_part': 4, 'memo': ''},
-                
-                # 5부 (7:00~7:50)
-                {'name': '김수현', 'grade': '초등 3학년', 'phone': '010-0000-1111', 'pickup_location': '승차', 'estimated_pickup_time': '6:35', 'session_part': 5, 'memo': ''},
-                {'name': '아이유', 'grade': '초등 4학년', 'phone': '010-1111-2222', 'pickup_location': '삼성래미안', 'estimated_pickup_time': '6:40', 'session_part': 5, 'memo': ''},
-            ]
-            
-            for student_data in students_data:
-                student = Student(**student_data)
-                db.session.add(student)
-            
-            db.session.commit()
-            
-            # 샘플 스케줄 데이터 (월요일, 수요일, 금요일)
-            students = Student.query.all()
-            for student in students:
-                for day in [0, 2, 4]:  # 월, 수, 금
-                    # 부별 시간 설정
-                    if student.session_part == 1:  # 1부
-                        pickup_time_obj = time(14, 0)  # 2:00 PM
-                        dropoff_time_obj = time(14, 50)  # 2:50 PM
-                    elif student.session_part == 2:  # 2부
-                        pickup_time_obj = time(15, 0)  # 3:00 PM
-                        dropoff_time_obj = time(15, 50)  # 3:50 PM
-                    elif student.session_part == 3:  # 3부
-                        pickup_time_obj = time(16, 30)  # 4:30 PM
-                        dropoff_time_obj = time(17, 20)  # 5:20 PM
-                    elif student.session_part == 4:  # 4부
-                        pickup_time_obj = time(17, 30)  # 5:30 PM
-                        dropoff_time_obj = time(18, 20)  # 6:20 PM
-                    else:  # 5부
-                        pickup_time_obj = time(19, 0)  # 7:00 PM
-                        dropoff_time_obj = time(19, 50)  # 7:50 PM
+        try:
+            if Student.query.count() == 0:
+                # 실제 시간표 기반 샘플 학생 데이터
+                students_data = [
+                    # 1부 (2:00~2:50)
+                    {'name': '홍길동', 'grade': '초등 3학년', 'phone': '010-1234-5678', 'pickup_location': '동부시스템', 'estimated_pickup_time': '2:40', 'session_part': 1, 'memo': ''},
+                    {'name': '김철수', 'grade': '초등 4학년', 'phone': '010-2345-6789', 'pickup_location': '승차', 'estimated_pickup_time': '2:30', 'session_part': 1, 'memo': ''},
                     
-                    schedule = Schedule(
-                        student_id=student.id,
-                        day_of_week=day,
-                        pickup_time=pickup_time_obj,
-                        dropoff_time=dropoff_time_obj
-                    )
-                    db.session.add(schedule)
-            
-            db.session.commit()
-    
-    # Render 환경에서는 포트를 환경변수에서 가져오기
+                    # 2부 (3:00~3:50)  
+                    {'name': '이영희', 'grade': '초등 2학년', 'phone': '010-1111-2222', 'pickup_location': '현대홈타운', 'estimated_pickup_time': '3:30', 'session_part': 2, 'memo': ''},
+                    {'name': '박민수', 'grade': '초등 5학년', 'phone': '010-3333-4444', 'pickup_location': '삼성래미안', 'estimated_pickup_time': '3:40', 'session_part': 2, 'memo': ''},
+                    {'name': '최수진', 'grade': '초등 3학년', 'phone': '010-4444-5555', 'pickup_location': '삼성래미안', 'estimated_pickup_time': '3:42', 'session_part': 2, 'memo': ''},
+                    
+                    # 3부 (4:30~5:20)
+                    {'name': '정우성', 'grade': '초등 1학년', 'phone': '010-5555-6666', 'pickup_location': '현대홈타운', 'estimated_pickup_time': '4:15', 'session_part': 3, 'memo': ''},
+                    {'name': '강호동', 'grade': '초등 4학년', 'phone': '010-6666-7777', 'pickup_location': '이화빌라', 'estimated_pickup_time': '4:10', 'session_part': 3, 'memo': ''},
+                    {'name': '유재석', 'grade': '초등 6학년', 'phone': '010-7777-8888', 'pickup_location': '영은유치원', 'estimated_pickup_time': '4:14', 'session_part': 3, 'memo': ''},
+                    
+                    # 4부 (5:30~6:20)
+                    {'name': '송중기', 'grade': '초등 2학년', 'phone': '010-8888-9999', 'pickup_location': '현대홈타운', 'estimated_pickup_time': '6:30', 'session_part': 4, 'memo': ''},
+                    {'name': '전지현', 'grade': '초등 5학년', 'phone': '010-9999-0000', 'pickup_location': '이디야', 'estimated_pickup_time': '6:35', 'session_part': 4, 'memo': ''},
+                    
+                    # 5부 (7:00~7:50)
+                    {'name': '김수현', 'grade': '초등 3학년', 'phone': '010-0000-1111', 'pickup_location': '승차', 'estimated_pickup_time': '6:35', 'session_part': 5, 'memo': ''},
+                    {'name': '아이유', 'grade': '초등 4학년', 'phone': '010-1111-2222', 'pickup_location': '삼성래미안', 'estimated_pickup_time': '6:40', 'session_part': 5, 'memo': ''},
+                ]
+                
+                for student_data in students_data:
+                    student = Student(**student_data)
+                    db.session.add(student)
+                
+                db.session.commit()
+                
+                # 샘플 스케줄 데이터 (월요일, 수요일, 금요일)
+                students = Student.query.all()
+                for student in students:
+                    for day in [0, 2, 4]:  # 월, 수, 금
+                        # 부별 시간 설정
+                        if student.session_part == 1:  # 1부
+                            pickup_time_obj = time(14, 0)  # 2:00 PM
+                            dropoff_time_obj = time(14, 50)  # 2:50 PM
+                        elif student.session_part == 2:  # 2부
+                            pickup_time_obj = time(15, 0)  # 3:00 PM
+                            dropoff_time_obj = time(15, 50)  # 3:50 PM
+                        elif student.session_part == 3:  # 3부
+                            pickup_time_obj = time(16, 30)  # 4:30 PM
+                            dropoff_time_obj = time(17, 20)  # 5:20 PM
+                        elif student.session_part == 4:  # 4부
+                            pickup_time_obj = time(17, 30)  # 5:30 PM
+                            dropoff_time_obj = time(18, 20)  # 6:20 PM
+                        else:  # 5부
+                            pickup_time_obj = time(19, 0)  # 7:00 PM
+                            dropoff_time_obj = time(19, 50)  # 7:50 PM
+                        
+                        schedule = Schedule(
+                            student_id=student.id,
+                            day_of_week=day,
+                            pickup_time=pickup_time_obj,
+                            dropoff_time=dropoff_time_obj
+                        )
+                        db.session.add(schedule)
+                
+                db.session.commit()
+        except Exception as e:
+            print(f"Database initialization error: {e}")
+            pass
+
+# 데이터베이스 초기화 실행
+init_db()
+
+# 개발 환경에서만 Flask 직접 실행
+if __name__ == '__main__':
+    import os
     port = int(os.environ.get('PORT', 5000))
-    host = '0.0.0.0'  # 외부 접속 허용
+    host = '0.0.0.0'
     debug = os.environ.get('FLASK_ENV') != 'production'
-    
     app.run(host=host, port=port, debug=debug) 
