@@ -2,7 +2,10 @@ services:
   - type: web
     name: tkd-transport
     env: python
+    runtime: python
     buildCommand: |
+      python --version
+      pip --version
       pip install --upgrade pip
       pip install gunicorn
       pip install -r requirements.txt
@@ -10,3 +13,5 @@ services:
     envVars:
       - key: FLASK_ENV
         value: production
+      - key: PYTHON_VERSION
+        value: 3.11.4

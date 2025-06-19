@@ -71,7 +71,7 @@ target/
 .ipynb_checkpoints
 
 # pyenv
-.python-version
+# .python-version (keep for Render deployment)
 
 # celery beat schedule file
 celerybeat-schedule
