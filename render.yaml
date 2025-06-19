@@ -2,8 +2,11 @@ services:
   - type: web
     name: tkd-transport
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install --upgrade pip
+      pip install gunicorn
+      pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
     envVars:
       - key: FLASK_ENV
-        value: production 
+        value: production
