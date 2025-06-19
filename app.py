@@ -606,9 +606,10 @@ def remove_student_from_schedule():
         return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
+    import os
+    
     with app.app_context():
         # 배포환경에서는 데이터 보존, 개발환경에서만 재생성
-        import os
         if os.environ.get('FLASK_ENV') == 'production':
             db.create_all()  # 테이블이 없으면 생성만
         else:
@@ -679,4 +680,9 @@ if __name__ == '__main__':
             
             db.session.commit()
     
-    app.run(debug=True) 
+    # Render 환경에서는 포트를 환경변수에서 가져오기
+    port = int(os.environ.get('PORT', 5000))
+    host = '0.0.0.0'  # 외부 접속 허용
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    
+    app.run(host=host, port=port, debug=debug) 
