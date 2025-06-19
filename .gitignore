@@ -12,4 +12,12 @@ venv/
 *.db
 *.sqlite
 *.sqlite3
-instance/ 
+instance/
+
+# Node.js (혹시 남아있을 수 있는 파일들)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock 
