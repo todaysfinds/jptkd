@@ -684,13 +684,16 @@ def init_db():
             print(f"Database initialization error: {e}")
             pass
 
-# 데이터베이스 초기화 실행
-init_db()
-
 # 개발 환경에서만 Flask 직접 실행
 if __name__ == '__main__':
     import os
+    # 개발 환경에서만 데이터베이스 초기화
+    init_db()
     port = int(os.environ.get('PORT', 5000))
     host = '0.0.0.0'
     debug = os.environ.get('FLASK_ENV') != 'production'
-    app.run(host=host, port=port, debug=debug) 
+    app.run(host=host, port=port, debug=debug)
+else:
+    # 프로덕션 환경 (gunicorn)에서는 간단하게만 초기화
+    with app.app_context():
+        db.create_all() 
