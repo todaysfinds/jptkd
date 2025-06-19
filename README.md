@@ -18,15 +18,15 @@
 - **기간 설정**: 단일일 또는 기간 설정 가능
 
 ### 👨‍💼 관리자 기능
-- **요청 관리** (/admin/requests): 학부모 요청 승인/거절
-- **학생 관리** (/admin/students): 학생 정보 등록/수정
-- **스케줄 관리** (/admin/schedules): 요일별 픽업 시간 설정
+- **요청 관리**: 학부모 요청 승인/거절
+- **학생 관리**: 학생 정보 등록/수정
+- **스케줄 관리**: 요일별 픽업 시간 설정
 
 ## 기술 스택
 
 - **Backend**: Flask 2.3.3, SQLite, SQLAlchemy
-- **Frontend**: HTML5, Tailwind CSS 3.3.5, Vanilla JavaScript
-- **Build Tool**: PostCSS, npm
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Deployment**: Render.com
 
 ## 설치 및 실행
 
@@ -35,22 +35,9 @@
 ```bash
 # Python 패키지 설치
 pip install -r requirements.txt
-
-# Node.js 패키지 설치 (Tailwind CSS)
-npm install
 ```
 
-### 2. Tailwind CSS 빌드
-
-```bash
-# 개발 모드 (변경 감지)
-npm run build-css
-
-# 프로덕션 빌드
-npm run build
-```
-
-### 3. Flask 앱 실행
+### 2. Flask 앱 실행
 
 ```bash
 python app.py
@@ -62,23 +49,19 @@ python app.py
 
 ```
 06-tkd/
-├── app.py                 # Flask 메인 앱
-├── requirements.txt       # Python 의존성
-├── package.json          # Node.js 의존성
-├── tailwind.config.js    # Tailwind CSS 설정
-├── postcss.config.js     # PostCSS 설정
-├── templates/            # HTML 템플릿
+├── app.py                # Flask 메인 앱
+├── requirements.txt      # Python 의존성
+├── runtime.txt          # Python 버전
+├── render.yaml          # 배포 설정
+├── templates/           # HTML 템플릿
 │   ├── base.html         # 기본 레이아웃
 │   ├── today.html        # 메인 페이지
 │   ├── parent_absence.html # 학부모 요청 페이지
-│   ├── admin_requests.html # 관리자 요청 관리
 │   ├── admin_students.html # 관리자 학생 관리
-│   └── admin_schedules.html # 관리자 스케줄 관리
+│   └── admin_schedule_manager.html # 관리자 스케줄 관리
 └── static/
-    ├── src/
-    │   └── input.css     # Tailwind CSS 소스
-    └── dist/
-        └── output.css    # 빌드된 CSS
+    └── src/
+        └── input.css     # CSS 스타일
 ```
 
 ## 사용법
@@ -101,9 +84,8 @@ python app.py
 
 ### 관리자 기능
 
-1. **요청 관리**: 학부모 요청 승인/거절
-2. **학생 관리**: 새 학생 등록, 정보 수정
-3. **스케줄 관리**: 요일별 픽업/하차 시간 설정
+1. **학생 관리**: 새 학생 등록, 정보 수정
+2. **스케줄 관리**: 요일별 픽업/하차 시간 설정
 
 ## 데이터베이스
 
